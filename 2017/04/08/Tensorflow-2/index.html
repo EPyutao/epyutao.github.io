@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="tensorflow," />
 
 
 
@@ -87,15 +87,19 @@
 
 
 
-<meta name="description" content="念念不忘 必有回响">
-<meta property="og:type" content="website">
-<meta property="og:title" content="EPyutao">
-<meta property="og:url" content="http://EPyutao.com/index.html">
+<meta name="description" content="文中总结了几个经典的CNN模型和概念。模型实现代码详见Github。
+one-hotFor the purposes of this tutorial, we’re going to want our labels as “one-hot vectors”. A one-hot vector is a vector which is 0 in most dimensions, and 1 in a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tensorflow_2">
+<meta property="og:url" content="http://EPyutao.com/2017/04/08/Tensorflow-2/index.html">
 <meta property="og:site_name" content="EPyutao">
-<meta property="og:description" content="念念不忘 必有回响">
+<meta property="og:description" content="文中总结了几个经典的CNN模型和概念。模型实现代码详见Github。
+one-hotFor the purposes of this tutorial, we’re going to want our labels as “one-hot vectors”. A one-hot vector is a vector which is 0 in most dimensions, and 1 in a">
+<meta property="og:updated_time" content="2017-04-08T12:50:57.624Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="EPyutao">
-<meta name="twitter:description" content="念念不忘 必有回响">
+<meta name="twitter:title" content="Tensorflow_2">
+<meta name="twitter:description" content="文中总结了几个经典的CNN模型和概念。模型实现代码详见Github。
+one-hotFor the purposes of this tutorial, we’re going to want our labels as “one-hot vectors”. A one-hot vector is a vector which is 0 in most dimensions, and 1 in a">
 
 
 
@@ -123,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="http://EPyutao.com/"/>
+  <link rel="canonical" href="http://EPyutao.com/2017/04/08/Tensorflow-2/"/>
 
 
 
 
 
-  <title> EPyutao </title>
+  <title> Tensorflow_2 | EPyutao </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -154,9 +158,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -249,9 +251,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -281,10 +283,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2017/04/08/Tensorflow-2/" itemprop="url">
-                  Tensorflow_2
-                </a>
+                Tensorflow_2
               
             
           </h1>
@@ -335,9 +334,7 @@
       
 
       
-        
-          
-            <p>文中总结了几个经典的CNN模型和概念。模型实现代码详见<strong>Github</strong>。</p>
+        <p>文中总结了几个经典的CNN模型和概念。模型实现代码详见<strong>Github</strong>。</p>
 <h3 id="one-hot"><a href="#one-hot" class="headerlink" title="one-hot"></a>one-hot</h3><p>For the purposes of this tutorial, we’re going to want our labels as “one-hot vectors”. A one-hot vector is a vector which is 0 in most dimensions, and 1 in a single dimension.<br>拿到获取的原始特征，必须对每一特征分别进行归一化.  </p>
 <ul>
 <li>连续型特征归一化的常用方法: Rescale bounded continuous features 线性缩放 Standardize all continuous features 放缩到均值为0，方差为1  </li>
@@ -366,175 +363,66 @@
 <h3 id="ResNet-残差网络"><a href="#ResNet-残差网络" class="headerlink" title="ResNet 残差网络"></a>ResNet 残差网络</h3><p>ResNet是 He Kaiming 等人在 <em>Deep Residual Learning for Image Recognition</em> 一文中提出的模型。在传统深层的神经网络模型中，除了存在梯度扩散的问题外，还存在梯度退化问题：即随着深度增加，网络精度达到饱和，然后迅速下降。残差网络（Residual Nerworks）可以有效的解决退化问题。ResNet主要特点是跨层连接，通过引入捷径连接技术（shorcut connections）将输入跨层传递并与卷积的结果相加。在ResNet中只有一个取样层，其连接在卷积层的最后面。ResNet通过捷径连接技术使得输入通过多个路径流入最顶层，大幅降低了更深层模型的训练难度。该方法与VGGnet结合使用，具有很好的效果。作者提出一种结构来做residual learning.将一部分的输入信息，直接跳过layers，将其与通过layers的输出进行比较，整个网络则学习这个差别。在tflearn中构造了这个单元</p>
 <p><pre><code><br>def residual_block():<br>  Arguments:<br>      incoming: <code>Tensor</code>. Incoming 4-D Layer.<br>      // layer blocks为多层卷积核大小一致，输出通道数一致的卷积层。<br>      nb_blocks: <code>int</code>. Number of layer blocks.<br>      out_channels: <code>int</code>. The number of convolutional filters of the<br>          convolution layers.<br>      downsample: <code>bool</code>. If True, apply downsampling using<br>          ‘downsample_strides’ for strides.<br>      downsample_strides: <code>int</code>. The strides to use when downsampling.<br>      activation: <code>str</code> (name) or <code>function</code> (returning a <code>Tensor</code>).<br>          Activation applied to this layer (see tflearn.activations).<br>          Default: ‘linear’.<br>      batch_norm: <code>bool</code>. If True, apply batch normalization.<br>      bias: <code>bool</code>. If True, a bias is used.<br>      weights_init: <code>str</code> (name) or <code>Tensor</code>. Weights initialization.<br>          (see tflearn.initializations) Default: ‘uniform_scaling’.<br>      bias_init: <code>str</code> (name) or <code>tf.Tensor</code>. Bias initialization.<br>          (see tflearn.initializations) Default: ‘zeros’.<br>      regularizer: <code>str</code> (name) or <code>Tensor</code>. Add a regularizer to this<br>          layer weights (see tflearn.regularizers). Default: None.<br>      weight_decay: <code>float</code>. Regularizer decay parameter. Default: 0.001.<br>      trainable: <code>bool</code>. If True, weights will be trainable.<br>      restore: <code>bool</code>. If True, this layer weights will be restored when<br>          loading a model.<br>      reuse: <code>bool</code>. If True and ‘scope’ is provided, this layer variables<br>          will be reused (shared).<br>      scope: <code>str</code>. Define this layer scope (optional). A scope can be<br>          used to share variables between layers. Note that scope will<br>          override name.<br>      name: A name for this layer (optional). Default: ‘ShallowBottleneck’.<br>      // 每个block layers包含两个3*3的卷积层，<br>        tmp = incoming<br>        resnet = conv2d(incoming)<br>        resnet = conv2d(resnet)<br>        return resnet + tmp<br></code></pre><br>tflearn中的residual_block的实现实际上是对He在论文中提到的适用于resnet-34的block，他还提到一种1x1-&gt;3x3-&gt;1x1三层结构的bottleneck结构，这种结构适用于ResNet-50/101/152的深度。其余部分与传统的CNN训练方式一致。</p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://EPyutao.com/2017/02/18/Tensorflow-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="EPyutao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatarpic.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="EPyutao">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/02/18/Tensorflow-1/" itemprop="url">
-                  Tensorflow_1
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-18T15:46:48+08:00">
-                2017-02-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
         
-          
-            <p>去年11月底，Google宣布了Tensorflow对win10的支持，我便尝试在gtx1060的笔记本上试水tensorflow-gpu计算，进行machine learning的入门学习。</p>
-<h3 id="Tensorflow-GPU版本安装"><a href="#Tensorflow-GPU版本安装" class="headerlink" title="Tensorflow GPU版本安装"></a>Tensorflow GPU版本安装</h3><p>win10下安装tensorflow-gpu版本有要求先安装以下前置环境：</p>
-<ul>
-<li>DXSDK_Jun10.exe 微软的DirectX SDK工具包 安装完成后’d3dx9/10/11.h’三个头文件存在即可</li>
-<li>Cuda Nvidia发行的GPGPU程序  安装完成后能将CUDA_Samples实例编译通过不报错即可</li>
-<li>cuDNN Nvidia发行的GPU加速补丁，下载完成后将压缩包内文件替换掉’path:\NVIDIA GPU Computing Toolkit\CUDA\v8.x’即可</li>
-</ul>
-<p>当前置环境配置好后，就可以安装Tensorflow -GPU了，推荐使用Anaconda发行版来安装tensorflow。这里有一些坑需要注意，2017-2-4时，tf-windows版仅支持 python 3.5.x。而此时Anaconda官网默认下载版本是Anaconda 4.3.0.1，对应的python默认版本是python 3.6，所以如果安装过去一些教程提到的使用’pip install tensorflow-gpu’则会报错。因此tf官网推荐采用conda管理工具来为tensorflow配置所需的python库和python版本list，在此环境下pip安装tensorflow</p>
-<pre><code>C:> conda create -n tensorflow
-C:> activate tensorflow
-(tensorflow)C:> pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/windows/gpu/tensorflow_gpu-1.0.0-cp35-cp35m-win_x86_64.whl
-</code></pre>
-
-<h3 id="Tensorflow基本计算模式"><a href="#Tensorflow基本计算模式" class="headerlink" title="Tensorflow基本计算模式"></a>Tensorflow基本计算模式</h3><p>Tensorflow采用Session来启动一个artificial neural network，而neural network在tf里以图graph的形式来表示。对于ml工程类而言，其任务根据论文构造出的neural network采用tf实现出来，并通过调参来获得其在工业界不同细分领域的应用。<br>构建好graph后，将所有具有tf数据结构的参量进行<strong>inital</strong>后，就可以采用Session()来启动训练。</p>
-<p><pre><code>import tensorflow as tf<br>tf.Session().run(tf.train.OptimizerMethod(learning rate).minimize(loss_function()))</code></pre><br>run方法是训练的入口，其训练的是采用某种OptimizerMethod来计算loss_function()。<br>其中最常见训练方法的就是梯度下降算法GradientDescentOptimizer，但梯度下降算法有着局部最优，过拟合，梯度弥散等缺点。2006年Hinton等人提出了新的训练方法OptimizerMethod，才使得深层神经网络的应用成为现实。tf封装了大量的优化算法，使得工程类的应用可以不用花太多时间在各个训练方法的实现细节。</p>
-<h3 id="CNN的实现"><a href="#CNN的实现" class="headerlink" title="CNN的实现"></a>CNN的实现</h3><p>卷积神经网络CNN在图像识别领域有着极强的应用，Kaggle上’Dogs vs Cats’, ‘Fisheries Monitoring’等问题的most votes kernel很多都采用CNN的内核去实现。<br>CNN由两部分组成，Convolution卷积 和 Full connection全连接神经网络层。<br>一个基本的卷积层完成两件事，convolution和subsampling。convolution是一个采样过程，在tf中，通过设置stride和padding来拉升图片在’高度’方向上的长度,当stride=1时，图片处理后长宽不变。subsampling是采用pooling方法将图片在’长’和’宽’方向压缩。二者作用图片后，将图片变窄变高。</p>
-<p><pre><code>def weight_variable(shape):<br>    inital = tf.trunacted_normal(shape, stddev=0.1)<br>    return tf.Variable(inital)<br>def bias_variable(shape):<br>    initial = tf.constant(0.1, shape=shape)<br>    return tf.Variable(initial)</code></pre><br>先为不同的Neural network层定义weights和bias</p>
-<p><pre><code>def conv2d(x, W):<br>    return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding=’SAME’)<br>def max_pool_2x2(x):<br>    return tf.nn.max_pool(x, ksize=[1,2,2,1],strides=[1,2,2,1], padding=’SAME’)</code></pre><br>随后编写convolution和subsampling层。</p>
-<p><pre><code><br>FullFunc2 = tf.nn.relu(tf.matmul(tf.nn.dropout(FullFunc2), W_FF2) + b_FF2)<br></code></pre><br>这是全连接层的基本形式，将上一个隐藏层的数据采用dropout方法修建，在进行矩阵计算matmul，最后采用relu进行节点的激活。<br>CNN图Graph的构建形式大致如此。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
       
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/18/Tensorflow-1/" rel="next" title="Tensorflow_1">
+                <i class="fa fa-chevron-left"></i> Tensorflow_1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
 
       
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
           
           </div>
@@ -542,6 +430,10 @@ C:> activate tensorflow
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -561,8 +453,17 @@ C:> activate tensorflow
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatarpic.jpg"
@@ -624,6 +525,22 @@ C:> activate tensorflow
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#one-hot"><span class="nav-number">1.</span> <span class="nav-text">one-hot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积核尺寸"><span class="nav-number">2.</span> <span class="nav-text">卷积核尺寸</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xavier-initialization"><span class="nav-number">3.</span> <span class="nav-text">Xavier initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LRN局部响应归一化"><span class="nav-number">4.</span> <span class="nav-text">LRN局部响应归一化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#L2正则"><span class="nav-number">5.</span> <span class="nav-text">L2正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AlexNet"><span class="nav-number">6.</span> <span class="nav-text">AlexNet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GoogleNet"><span class="nav-number">7.</span> <span class="nav-text">GoogleNet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VGGNet"><span class="nav-number">8.</span> <span class="nav-text">VGGNet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResNet-残差网络"><span class="nav-number">9.</span> <span class="nav-text">ResNet 残差网络</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -736,6 +653,10 @@ C:> activate tensorflow
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
