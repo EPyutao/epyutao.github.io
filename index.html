@@ -260,6 +260,137 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://EPyutao.com/2017/04/18/Tensorflow-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="EPyutao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatarpic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="EPyutao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/18/Tensorflow-3/" itemprop="url">
+                  Tensorflow_3
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-18T22:37:40+08:00">
+                2017-04-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>图像检测深度学习方法经历了多代，前段时间 He kaiming 与 Ross 合作提出了 Mask-RCNN 模型，此文来整理一下 R-CNN,SPPnet Fast R-CNN, Faster R-CNN, Mask R-CNN 这一系列的深度学习图像检测模型和几个该领域传统的一些概念。  </p>
+<h3 id="HOG特征"><a href="#HOG特征" class="headerlink" title="HOG特征"></a>HOG特征</h3><p>方向梯度直方图（Histogram of Oriented Gradient, HOG）特征是一种在计算机视觉和图像处理中用来进行物体检测的特征描述子。它通过计算和统计图像局部区域的梯度方向直方图来构成特征。实现方式大抵如下：1.对输入图像灰度处理并对颜色空间归一化处理 2.计算每个像素的梯度(大小和方向)即采用[-1,0,1]和[1,0,-1]的卷积核对图像做卷积 3.将图像划分为多个小cell，统计每个cell的梯度直方图(每个像素点的梯度方向x梯度值) 4.将多个cell合并为一个block，对block内做归一化处理。<br>当梯度方向采用九个方向离散时，则一个cell内的HOG特征维数为9。</p>
+<h3 id="Bounding-Box"><a href="#Bounding-Box" class="headerlink" title="Bounding Box"></a>Bounding Box</h3><p>包围盒，用体积稍大而且特性简单的几何体来近似代替复杂的几何对象。selective search后的st使用bounding box来包围，可有效提高准确率，在R-CNN中，mAP达到了53.7。tensorflow在tf.image中有相关的函数。</p>
+<h3 id="R-CNN"><a href="#R-CNN" class="headerlink" title="R-CNN"></a>R-CNN</h3><p>R-CNN 是 Ross Girshick 在 <em>Rich feature hierarchies for accurate object detection and semantic segmentation</em> 一文中提出的一种 object detection 结构。其在数据集 PASCAL VOC 上测试了效果。R-CNN的整体框架为：1.输入image 2.提取候选区域extract region proposals(约2k个) 3.warped region(‘regardless of the size, we warp all pixels in a tight bounding box’) 4.Compute CNN feature 5.Classify regions.  </p>
+<ul>
+<li>候选区选取采用 <em>Selective Search for Object Recognition</em> 一文中Uijlings等人的的 selective search 方法。该方法具有能捕捉多尺度目标，多元化和能够快速计算的特点。采用 Hierarchical Grouping 分层次分组来形成基本的候选区域，具体是使用 bottom-up grouping。首先是产生大量初始区域，然后计算相邻候选区域的相似度，获取相似度最高的两个区域进行合并，直到所有区域合并为一体。文中采用了4个概念来描述相似度，color similarity; texture similarity; size similarity(for encouraging small regions to merge early); fill similarity。 4种相似度乘以不同的加权系数的加和构成两相邻区域相似度评价标准。文中提到的另一个概念就是多样化策略 Diversification Strategies。针对不同的图像采用不同的策略来获得更好的结果。也可以在不同的颜色通道RGB/HSV中进行 slective search ，以防遗漏候选区域。以下是分层次分组算法的伪代码<pre><code>Hierarchical Grouping Algorithm<br>Input: (colour) image<br>Output: Set of object location hypotheses L<br>Obtain initial regions R = {r1,··· ,rn}<br>Initialise similarity set S = 0<br>foreach Neighbouring region pair (ri, rj) do<br>Calculate similarity s(ri, rj)<br>S = S ∪ s(ri, rj)<br>while S != 0 do<br>Get highest similarity s(ri, rj) = max(S)<br>Merge corresponding regions rt = ri ∪ rj<br>Remove similarities regarding ri : S = S \ s(ri, r∗)<br>Remove similarities regarding rj : S = S \ s(r∗, rj)<br>Calculate similarity set St between rt and its neighbours<br>S = S ∪ St<br>R = R ∪ rt<br>Extract object location boxes L from all regions in R</code></pre></li>
+<li>将候选区域warp成归一化尺寸227x227。归一化的方法有直接各向异性缩放(即直接缩放)与各向同性缩放。</li>
+<li>采用5层卷积和2层全连接的CNN网络进行训练，先采用alexnet的参数初始化该网络的参数，然后输入selective search 的候选区域进行fine-tuning微调。Alexnet最后一层全连接的输出通道为10，微调时改为N+1个，多出来一个为背景。有论文采用VGG-17的网络结构进行初始化。论文采用SGD随机梯度下降法，每个迭代步有32张包含10个类别的图片和96张背景图片构成。图片进入网络后，比较候选框与当前图像上所标定框重叠面积最大的一个，如果重叠比例大于0.5，则认为该候选框为标定的类别，否则认为该候选框为背景。</li>
+<li>对每一类目标，采用一个线性脊回归器进行精修，输出为xy方向的缩放和平移，训练样本为该类候选框中，真值重叠面积大于0.6的候选区域。</li>
+</ul>
+<h3 id="SPPnet"><a href="#SPPnet" class="headerlink" title="SPPnet"></a>SPPnet</h3><p>由于R-CNN计算中对每个候选区域进行了卷积操作，造成了大量的冗余，He Kaiming 在 <em>Spatial pyramid pooling in deep convolutional networks for visual recognition</em> 一文中提出了SPPnet结构，优化了R-CNN。文中指出，卷积层并不需要固定输入图片的尺寸并且可以产生不同尺寸的特征图，而全连接层需要一个固定的输入。因此，作者提出了 spatial pyramid pooling 空间金字塔池化结构来解除对网络固定尺寸的限定。spp层加载在最后一层卷积层和全连接层之间。文中提出的spp层结构是采用三种大小的池化滑窗pooling windows(5x5,7x7,13x13)，产生三种大小的池化结构(3x3,2x2,1x1)，三种格子的结果concat后送入全连接层。<br>具体应用中，先将整图输入训练好的sppnet中，得到多层卷积输出，然后根据2000多个候选区域在卷积层中的映射位置，将这些候选区域送入SPP层获得一个相同的输出，将该输出送入全连接层进行分类。<br>过去的R-CNN中，由于候选区域采用crop或warp处理方式，使得识别准确率难以提高，而必须采用crop或warp的原因是，全连接层的输入是固定长度，所以在SPPnet中采用spp来使得全连接层的输入变为固定长度而提高准确率。</p>
+<h3 id="Fast-R-CNN"><a href="#Fast-R-CNN" class="headerlink" title="Fast R-CNN"></a>Fast R-CNN</h3><p>Ross Girshick大神在去微软后，提出了改进的R-CNN模型，发表在论文 <em>Fast R-CNN</em> 中。模型将目标检测的四个基本步骤：候选区域生成，特征提取，分类，位置修正，统一到了一个网络框架中，并且没有冗余。该模型修正了R-CNN与SPPnet的缺点，使用caffe开发并进行了开源。该模型首先初始化了一些预训练的网络，这些网络由5~13层卷积层与5层maxpooling层构成，并将最后一层maxpooling用RoI pooling层代替,将区域特征提取放在这一层。随后将最后一层全连接层和softmax层用两个同级层代替(一个产生k+1类softmax结果，另一个对特定类的bounding box 进行修正)。最后调整网络结构，使其能够接受两种输入list of image &amp; list of RoIs。<br>RoI pooling采用最大池化将一个候选区域的特征转换成一个具有固定大小的小特征图，可以看做是一个SPPnet的简化版本，每个RoI用包含有左上角坐标和长宽的tuple来表示。<br>loss function 由softmax分类结果和bounding box的定位结果构成。论文中详细给出了每种任务的loss function具体形式。</p>
+<h3 id="Faster-R-CNN"><a href="#Faster-R-CNN" class="headerlink" title="Faster R-CNN"></a>Faster R-CNN</h3><p>Fast R-CNN的候选区域仍由selective search来生成，而在Fater R-CNN中则全部都用deep learning来实现了。Kaiming He 与 RBG 合作的论文 <em>Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks</em> 中提出了一种新的R-CNN结构，提出Region Proposal Network(RPN)来取代过去的selective search方法进行候选区域的提取。RPN中，采用了pyramid of regression references方案，避免了selective search采用枚举的来产生候选区域。网络结构在过去的Fast R-CNN中，在多层卷积后加入RPN结构，RPN连接卷积层输出的feature map，采用一个类似于RoI的结构，输出两个层，一个为该anchor为建议区域的概率，另一个则是boundingbox regression。在RPN中，通过一个anchor扫描feature map，而每个滑窗对应k个anchor boxes，使用这个方法来提高scale-invariant,具体实践时，对feature map上每个位置，考虑三种面积x三种比例的候选区域(anchor)，输出层中，classification层输出每个位置上，这9个anchor属于前景或者背景的概率，boundingbox regression层则输出每个位置上9个anchor对应的boundingbox的平移缩放参数。对于RPN的输入样本而言，将这么多anchor与标定的真值区域对比，将重叠比例最大的记为前景样本。对于剩下的anchor，如果与某个标定的anchor重叠大于0.7，也标记为前景样本，与任意标定的anchor重叠都小于0.3，则标记为背景样本。处于中间的丢弃不用。<br>采用Alternating training方式进行训练：1.训练RPN(第一次时采用ImageNet得到的数据来进行初始化)；2.用RPN获得的区域训练Fast R-CNN(第一次时，同样采用ImageNet来初始化);3.由于共享参数，将RPN中的卷积层参数再次初始化。反复迭代，知道训练结束。</p>
+<h3 id="YOLO-darknet"><a href="#YOLO-darknet" class="headerlink" title="YOLO-darknet"></a>YOLO-darknet</h3><p><em>YOLO9000:Better, Faster, Stronger</em> Joseph Redmon &amp; Ali Farhadi<br>YOLO的anchor选取更粗暴，将图像划分为s*s个网络，对每个网络预测和训练5个参数(中心坐标，长宽，置信度评分)后面是常规的多层卷积和全连接。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://EPyutao.com/2017/04/08/Tensorflow-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -577,7 +708,7 @@ C:> activate tensorflow
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
