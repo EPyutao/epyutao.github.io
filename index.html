@@ -260,6 +260,174 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://EPyutao.com/2017/04/27/Tensorflow-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="EPyutao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatarpic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="EPyutao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/27/Tensorflow-4/" itemprop="url">
+                  Tensorflow-4
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-27T18:36:03+08:00">
+                2017-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>使用CNN完成一个验证码识别demo，详细代码见 <a href="https://github.com/EPyutao/tfProject/tree/master/Yanzhengma" target="_blank" rel="external">github</a> (使用版本Tensorflow 1.0)：  </p>
+<h3 id="验证码生成"><a href="#验证码生成" class="headerlink" title="验证码生成"></a>验证码生成</h3><p>常规的使用python生成验证码方法是生成字母与数字的组合，将单个元素进行旋转，添加背景色，噪点，干扰线等。本文中使用ImageCaptcha来生成验证码。该package可以加载自己的字体图片库，并在生成的验证码上随机添加30个噪点并绘制噪声曲线。使用 pip 安装ImageCaptcha，编写一个生成随机验证码list的函数，并将其转换为str数据结构，调用ImageCaptcha.generate(str)生成验证码图片。调用PIL库中的Image.open() 和 numpy.array()将图片转换为np.ndarray数据结构。文件为gen_captcha.py</p>
+<h3 id="模型与训练"><a href="#模型与训练" class="headerlink" title="模型与训练"></a>模型与训练</h3><p>构造工具函数，包含ImageCaptcha生成的验证码转换为灰度图，该图大小为[60,160,3]；将标签文本转换为向量；将向量转换为标签文本；生成训练batch，size=64，将灰度图转换为一维数据。模型部分采用CNN模型，使用3层卷积2层全连接，对输出层的数据计算和标签的sigmod_cross_entropy作为损失函数。<strong>当模型精度达到0.9时停止训练，此时训练步数为13400步，相当于训练集达到了857600张图片，而验证码生成的图片总共可以达到八百万张，因此只使用了其中十分之一的数据，就训练到了90%的准确率。</strong> 文件为train.py。保存模型后，同级目录下出现4个文件，checkpoint存储了model的位置，其余为二进制文件。而在恢复过程中，调用tf.train.latest_checkpoint函数则是直接检索该文件内内容，并返回给saver.restore的save_path。</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>调用同一级目录下保存的训练模型，文件为test.py：</p>
+<pre><code>
+from train import *
+from gen_captcha import gen_captcha_text_and_image
+
+
+def crack_captcha(captcha_image):
+    output = crack_captcha_cnn()
+
+    saver = tf.train.Saver()
+    with tf.Session() as sess:
+        saver.restore(sess, tf.train.latest_checkpoint('.'))
+
+        predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+        text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
+
+        text = text_list[0].tolist()
+        vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
+        i = 0
+        for n in text:
+            vector[i * CHAR_SET_LEN + n] = 1
+            i += 1
+        return vec2text(vector)
+
+
+text, image = gen_captcha_text_and_image()
+print(image.shape)
+
+
+image = convert2gray(image)
+print(image.shape)
+image = image.flatten() / 255
+print(image.shape)
+
+predict_text = crack_captcha(image)
+
+print("正确: {}  预测: {}".format(text, predict_text))
+</code></pre>
+最终测试结果如下：
+![right](http://epyutao.oss-cn-shanghai.aliyuncs.com/figure_2.png)
+<pre><code>
+正确: jkMf  预测: jkMf
+</code></pre>
+反复测试中，也发现了错误。
+![wrong](http://epyutao.oss-cn-shanghai.aliyuncs.com/figure_1.png)
+<pre><code>
+正确: e8g2  预测: e8B2
+</code></pre>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://EPyutao.com/2017/04/18/Tensorflow-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -708,7 +876,7 @@ C:> activate tensorflow
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
