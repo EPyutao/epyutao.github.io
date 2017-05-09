@@ -1,0 +1,790 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="opencv," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Install安装opencv for c++ winodws ：为项目的属性管理器中添加库目录和包含目录，linker添加依赖项，并添加系统变量。安装opencv for python，推荐使用conda管理包:  
+
+conda install -c https://conda.binstar.org/menpo opencv3
+  
+
+基本类与方法
+Mat：使用Mat数据结构来表示图像，能够">
+<meta property="og:type" content="article">
+<meta property="og:title" content="opencv-1">
+<meta property="og:url" content="http://EPyutao.com/2017/05/01/opencv-1/index.html">
+<meta property="og:site_name" content="EPyutao">
+<meta property="og:description" content="Install安装opencv for c++ winodws ：为项目的属性管理器中添加库目录和包含目录，linker添加依赖项，并添加系统变量。安装opencv for python，推荐使用conda管理包:  
+
+conda install -c https://conda.binstar.org/menpo opencv3
+  
+
+基本类与方法
+Mat：使用Mat数据结构来表示图像，能够">
+<meta property="og:updated_time" content="2017-05-09T09:02:53.287Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="opencv-1">
+<meta name="twitter:description" content="Install安装opencv for c++ winodws ：为项目的属性管理器中添加库目录和包含目录，linker添加依赖项，并添加系统变量。安装opencv for python，推荐使用conda管理包:  
+
+conda install -c https://conda.binstar.org/menpo opencv3
+  
+
+基本类与方法
+Mat：使用Mat数据结构来表示图像，能够">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://EPyutao.com/2017/05/01/opencv-1/"/>
+
+
+
+
+
+  <title> opencv-1 | EPyutao </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">EPyutao</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://EPyutao.com/2017/05/01/opencv-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="EPyutao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatarpic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="EPyutao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                opencv-1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-01T17:01:36+08:00">
+                2017-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><p>安装opencv for c++ winodws ：<br>为项目的属性管理器中添加库目录和包含目录，linker添加依赖项，并添加系统变量。<br>安装opencv for python，推荐使用conda管理包:  </p>
+<pre><code>
+conda install -c https://conda.binstar.org/menpo opencv3
+</code></pre>  
+
+<h3 id="基本类与方法"><a href="#基本类与方法" class="headerlink" title="基本类与方法"></a>基本类与方法</h3><ul>
+<li>Mat：使用Mat数据结构来表示图像，能够自动进行内存管理。Mat类也重新定义了&lt;&lt;操作符，可以不经过for循环直接采用cout&lt;&lt;mat 来输出所有的像素值。该类提供了多种构造函数。对于多通道图像而言，矩阵的列中包含多个子列，其子列个数与通道数相等。mat.size()获得图像大小。</li>
+<li>at函数：实现读Mat数据结构中的某个像素，或者对某个像素进行复制操作。<pre><code>
+uchar value = mat.at<uchar>(i, j); //读取i,j处的像素值
+mat.at<uchar>(i, j) = 128; //将i,j处的像素值设为128
+</uchar></uchar></code></pre></li>
+<li>MatIterator迭代器：高效进行矩阵元素的遍历。<pre><code><br>MatIterator_<uchar> begin, end;<br>for(begin = img.begin<uchar>(), end = img.end<uchar>(); begin!=end; ++begin)<br>{<br>*begin = TODO<br>}<br></uchar></uchar></uchar></code></pre></li>
+<li>指针遍历： uchar *p = mat.ptr<uchar>(i) //获取第i行的像素指针</uchar></li>
+<li>filter2D函数：滤波器掩码核函数，参数为输入图像Mat, 输出图像，输入图像通道数，以及用到的核函数。<br><pre><code><br>//定义核函数<br>Mat kern = (Mat_<char>(3,3)&lt;&lt; 0, -1, 0,-1, 5, -1, 0, -1, 0);<br>//调用filter2D函数<br>filter2D(Input, Output, Input.depth， kern)<br></char></code></pre><br>调整kern矩阵，还可以以邻域算子方式改变图像亮度</li>
+<li>addWeighted函数：对两幅图像进行blending混合。参数为输入图像mat1, 权重alpha1, 输入图像2， 权重alpha2， 偏置beta， 输出图像mat3</li>
+<li>dft():离散傅里叶变化函数。</li>
+<li>通道转换:cvtColor(src, dst, ColorConversionCodes)：将图像的颜色空间转换为另一种模式。</li>
+</ul>
+<h3 id="基本绘图"><a href="#基本绘图" class="headerlink" title="基本绘图"></a>基本绘图</h3><ul>
+<li>point:point数据结构表示了一个2D的点，定义为： Point pt = Point(10, 8);</li>
+<li>Scalar：该数据结构表示了具有4个元素的数组。在opencv中用于传递像素值: Scalar(blue, green, red);</li>
+<li>Myline(Mat img, Point start, Point end):绘制一条从start到end的直线段。</li>
+<li>MyEllipse(Mat img, double angle)：绘制一个椭圆，椭圆旋转角为angle</li>
+<li>MyFilledCircle(Mat img, Point center):绘制实心椭圆。</li>
+<li>MyPolygon(Mat img)：绘制多边形。以上方法绘制的图像大小和中心为宽度的固定百分比。</li>
+</ul>
+<h3 id="imgproc模块"><a href="#imgproc模块" class="headerlink" title="imgproc模块"></a>imgproc模块</h3><ul>
+<li>平滑处理：blur(src, dst, size(W,H), Point(-1,-1))：kern大小，point被平滑点位置； GaussianBlur(src, dst, size(W,H),theta1, theta2):kern大小，theta为x,y方向标准差;  medianBlur(src, dst, i):i为内核大小，必须为奇数,中值滤波器; bilateralFilter(src, dst, d, thetaColor, thetaSpace),双边滤波器。</li>
+<li>腐蚀与膨胀(Eroding and Dilating):将图像与内核进行卷积操作，将卷积核内区域最大值代替锚点(使亮区拓展)，或最小值代替锚点(使暗区拓展).erode与dilate函数均接受输入mat,输出mat,kern这三个参数，kern可以为Mat格式数据结构，可以有矩形(MORPH_RECT)，交叉形(MORPH_CROSS)，椭圆形(MORPH_ELLIPSE)等形状卷积核。<pre><code>
+Mat element = getStructuringElement(type, Size, Point);
+erode(src, dst, element);
+</code></pre>
+先进行erode再进行dilate，即对图像进行开运算(opening)，能排除小型亮色区域；新进行dilate再进行erode，即对图像进行闭运算(closing)，能排除小型暗色区域。形态梯度(Morphological Gradient)：dilate - erode；顶帽(Top Hat): src - open(src); 黑帽(balck hat): close(src) - src。以上五种形态学运算可以采用morphologyEX来操作
+<pre><code>
+Mat ele = getStructuringElement();
+morphologyEX(src, dst, Morphology_Operations, ele);
+</code></pre></li>
+<li>图像金字塔: 1.Gaussian pyramid高斯金字塔：图像与Gussian kern卷积，再讲所有的偶数行与列去除，是一个向下采样的方式。2.Laplace pyramid拉普拉斯金字塔:高斯金字塔丢失的数据构成了laplace金字塔，用来向上重建图像。<pre><code>
+pyrDown(src, dst, Size(src.cols/2, src.rows/2))
+pyrUp(src, dst, Size(src.cols*2, src.rows*2))
+</code></pre></li>
+<li>阈值操作:threshold(src, dst, threshold_value, max_grayvalue, threshold_type)接受的参数为输入输出图像，阈值，最大灰度值，阈值的类型：0: 二进制阈值 1: 反二进制阈值 2: 截断阈值 3: 0阈值 4: 反0阈值</li>
+<li>添加边界:copyMakeBorder(src, dst, topWidth, bottomWidth, leftWidth, rightWidth, borderType, value)接受参数，boderType接受两个参数：BORDER_CONSTANT；BORDER_REPLICATE。</li>
+<li>Sobel导数：Sobel是一个离散的微分算子，用来计算图像灰度函数的近似梯度。<pre><code>
+//Sobel(src_gray, grad_x, ddepth = CV_16S, x_order, cale, delta, BORDER_DEFAULT)
+//求x方向导数
+Sobel( src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT )
+//将两个方向的绝对值加和便获得梯度值。
+grad = abs(grad_x) + abs(grad_y)
+</code></pre></li>
+<li>Laplacian算子：一个离散的微分算子，用来求二阶导数。不同于sobel函数，Laplacian直接用来边缘检测。<pre><code>
+Laplacian( src_gray, dst, ddepth, kernel_size, scale, delta, BORDER_DEFAULT );
+</code></pre></li>
+<li>Canny边缘检测：最优边缘检测方法：1.采用GaussianBlur进行卷积降噪; 2.用sobel算子计算一阶导数，并计算梯度方向角，而且将梯度方向角近似到(0,45,90,135)四个可能角度中; 3.非极大值抑制，排除了非边缘像素; 4.滞后阈值，保留高度值处的值，剔除低阈值处的值，处于中间的值则仅当其连接到一个高阈值时保留。<br><pre><code><br>Canny( src, dst, lowThreshold, heighThreshold, kernel_size );<br></code></pre><br>输出结果为0和255两个值。</li>
+<li>HoughLine霍夫线变化：霍夫线变化是一种用来寻找直线的方法。在用霍夫线变化之前，要先对图像进行边缘检测处理，即霍夫线变化的直接输入只能是边缘二值图像。OpenCV实现了以下两种霍夫线变换：标准霍夫线变换，它能给我们提供一组参数对的集合来表示检测到的直线，在OpenCV中通过函数HoughLines来实现；统计概率霍夫线变换，这是执行起来效率更高的霍夫线变换. 它输出检测到的直线的端点在OpenCV 中它通过函数HoughLinesP来实现。前者返回vector<vec2f>类型的数据，后者返回vector<vec4i>类型数据。</vec4i></vec2f></li>
+<li>HoughCircles霍夫圆变化：霍夫圆变换的基本原理与霍夫线变换类似, 只是点对应的二维极径极角空间被三维的圆心点x, y还有半径r空间取代.<br><pre><code><br>vector<vec3f> circles;<br>HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, dp=1, min_dist = src_gray.rows/8, param_1=200, param_2=100, min_radius=0, max_radius=0 );<br></vec3f></code></pre><br>返回一个vec3f的向量，前两位为圆心坐标，最后一位为半径。接受的变量为：1.src<em>gray: 输入图像 (灰度图)；2.circles: 存储下面三个参数: x</em>{c}, y_{c}, r 集合的容器来表示每个检测到的圆； 3.CV_HOUGH_GRADIENT: 指定检测方法. 现在OpenCV中只有霍夫梯度法； 4.dp = 1: 累加器图像的反比分辨率； 4.min_dist = src_gray.rows/8: 检测到圆心之间的最小距离； 5.param_1 = 200: Canny边缘函数的高阈值； 6.param_2 = 100: 圆心检测阈值； 7.min_radius = 0: 能检测到的最小圆半径, 默认为0； 8.max_radius = 0: 能检测到的最大圆半径, 默认为0</li>
+<li>resize尺度变化: resize(src, dst, dsize, fx, fy, interpolation)函数，用于变换图片尺寸，dsize接受一个Size(width, heigh)的参数，fx,fy接受一个x和y方向的缩放和拉伸比例。</li>
+<li>Remapping重映射：即把一个图像中一个位置的像素放置到另一个图片指定位置的过程. remap(src, dst, InputArray-map_x, InputArray-map_y, interpolation, borderMode, Scalar()) ，在处理中，将map_x.at<float>(j, i) = TODO; 作为映射方法函数在x方向的处理函数。</float></li>
+<li>Affine Transformation仿射变换:任意一个仿射变化都可以表示为图像mat乘以一个矩阵(线性变换)加上一个向量(平移);在opencv中采用一个2x3矩阵来表示仿射变换。仿射变换有两个主要api，一个是通过目标图像与源图像联系，获得两图像之间的仿射变换矩阵(即2x3矩阵) AffineMatrix = getAffineTransform( srcList, dstList), AffineMatrix数据结构为Mat型; 另一个是调用仿射变换矩阵，应用到图像上:warpAffine(src, dst, AffineMatrix, dst.size()),其中dst.size()是Size类型数据。而旋转仿射变换矩阵可以通过getRotationMatrix2D(center, angle, scale)来获得：其中center为Point类型数据结构，angle为旋转角度(顺时针)，scale为缩放因子。</li>
+<li>Histogram直方图相关: 直方图是图像中像素强度分布的图形表达方式.  1.直方图均衡化:将源图的直方图分布映射到一个归一化的累积分布函数cdf, equalizeHist(src, dst)将原图均衡化,注意此处src接受一个灰度图为参数;  2.计算直方图:calcHist( &amp;src, nimages, channels, InputMask, OutputArray, dims, histSize, Ranges, uniform, accumulate): src要传入指针&amp;src, OutputArray的数据结构类型是Mat, dims:直方图的维数,histSize:bin数目采用指针形式，Ranges:数据为二维数组,每个维度的取值范围Ranges(0,0)~Ranges(0,1);  3.直方图对比：compareHist(hist1, hist2, compareModel)<pre><code>//计算与绘制直方图:
+cvtColor(src, src, CV_BGR2GRAY);
+int histSize = 256;
+int hist_size[] = { histSize };
+float range[] = { 0, 256 };
+cout << range[1]<< endl;
+const float* ranges[] = { range };
+cout << ranges[0][1];
+Mat hist;
+calcHist(&src, 1, 0, Mat(), hist, 1, hist_size, ranges, true, false);
+cout << "calcHist Size: " << hist.size() << endl;
+//绘制画布
+int hist_w = 400;
+int hist_h = 400;
+int bin_w = cvRound((double)hist_w / histSize);//地板除,获取bin的宽度
+cout << bin_w;
+Mat histImage(hist_w, hist_h, CV_8UC3, Scalar(0, 0, 0));
+// 归一化直方图
+normalize(hist, hist, 0, histImage.rows, NORM_MINMAX, -1, Mat());
+// 直方图画布绘制直方图
+for (int i = 1; i < histSize; i++) {
+line(histImage, Point(bin_w*(i-1), hist_h - cvRound(hist.at<float>(i - 1))), Point(bin_w*(i), hist_h - cvRound(hist.at<float>(i))), Scalar(0, 0, 255), 2, 8, 0);
+}
+namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE);
+imshow("calcHist Demo", histImage);
+</float></float></code></pre></li>
+<li>反向投影:计算某一特征的直方图，然后使用模型去寻找图像中存在的该特征，类似于HOG行人检测.调用的API为: calcBackProject(&amp;src, nimages, &amp;channels, Hist, OutputArray, &amp;ranges, scale, uniform)，通过调节Hist，产生不同特征的mask来对src进行反向投影。</li>
+<li>模板匹配:在一幅图像中寻找与另一幅模板图像最匹配的技术。模板匹配操作: matchTemplate(img, templ, result, match_method); result是结果匹配矩阵， 使用minMaxLoc来确定矩阵result中最大最小值的位置。minMaxLoc( result, &amp;minVal, &amp;maxVal, &amp;minLoc, &amp;maxLoc, Mat() ); 其中minLoc与maxLoc均为Point数据类型。</li>
+<li>凸包: findContours用来寻找轮廓,返回一个contours(数据结构vector<vector<point>&gt;)，contours.size()表明了有多少个轮廓，contours[i]则表明了该轮廓点构成; drawContours用来绘制轮廓接受一个contours; contours[i]单独表示一个点构成，approxPolyDP，boundingRect，minEnclosingCircle，minAreaRect，fitEllipse均可以接受这类型的参数，并返回该点构成的多边形逼近,矩形边界框,圆形边界框,最小包围矩形，椭圆。boundingRect计算出数值类型为vector<rect></rect> 。对于每个contours[i]数据而言，都可以 使用contourArea 来计算轮廓面积， arcLength 来计算轮廓或曲线长度。</vector<point></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/opencv/" rel="tag"># opencv</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/27/Tensorflow-4/" rel="next" title="Tensorflow-4">
+                <i class="fa fa-chevron-left"></i> Tensorflow-4
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatarpic.jpg"
+               alt="EPyutao" />
+          <p class="site-author-name" itemprop="name">EPyutao</p>
+           
+              <p class="site-description motion-element" itemprop="description">念念不忘 必有回响</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/EPyutao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install"><span class="nav-number">1.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本类与方法"><span class="nav-number">2.</span> <span class="nav-text">基本类与方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本绘图"><span class="nav-number">3.</span> <span class="nav-text">基本绘图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#imgproc模块"><span class="nav-number">4.</span> <span class="nav-text">imgproc模块</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">EPyutao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
